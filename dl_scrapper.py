@@ -1,5 +1,6 @@
 import re
 import os
+import shutil
 from bs4 import BeautifulSoup
 import requests
 from tqdm import tqdm
@@ -11,19 +12,23 @@ headers = {"User-Agent": "Mozilla/5.0"}
 remove_punctuation_map = dict((ord(char), None) for char in '\/*?:"<>|')
 
 # Defining working directory
-working_directory = "C:\\Private\\python_scripts\\dl_band_list\\temp"
+path = os.getcwd()
+
+working_directory = path+"\\temp"
+
+# Delete if previous version exists
+try:
+    shutil.rmtree(working_directory)
+except:
+    pass
+    
+# Creating temp directory for storing generated *.txt files 
+os.mkdir('temp')
+
 
 # Creating band list
 bands_list = [
-    "metallica",
-    "iron maiden",
-    "megadeth",
-    "black sabbath",
-    "judas priest",
-    "sabaton",
-    "in flames",
-    "nightwish",
-    "motorhead",
+    "iron maiden"
 ]
 
 # Capitalizing first letter of each word
