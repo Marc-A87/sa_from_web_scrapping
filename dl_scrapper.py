@@ -14,22 +14,20 @@ remove_punctuation_map = dict((ord(char), None) for char in '\/*?:"<>|')
 # Defining working directory
 path = os.getcwd()
 
-working_directory = path+"\\temp"
+working_directory = path + "\\temp"
 
 # Delete if previous version exists
 try:
     shutil.rmtree(working_directory)
 except:
     pass
-    
-# Creating temp directory for storing generated *.txt files 
-os.mkdir('temp')
+
+# Creating temp directory for storing generated *.txt files
+os.mkdir("temp")
 
 
 # Creating band list
-bands_list = [
-    "iron maiden"
-]
+bands_list = ["hammerfall"]
 
 # Capitalizing first letter of each word
 bands_list_cap = []
@@ -100,8 +98,7 @@ for key in tqdm(full_tracklist_dict):
 
     single_link_dict[key] = first_links_for_album_in_artist
 
-
-# Parsing artist and album name
+# iterate of artists
 for key, value in tqdm(single_link_dict.items()):
 
     os.chdir(working_directory)
@@ -109,37 +106,68 @@ for key, value in tqdm(single_link_dict.items()):
     current_artist = key
     album = value
 
+    os.mkdir(current_artist)
+
     print(f"Current artist: {current_artist}")
 
+    # Iterate of all albums
+    # TODO: Fix issue with non-album songs (will make script crash)
     for album in tqdm(value):
+
+        os.chdir(str(working_directory + "\\" + current_artist))
+
         # matching album
         match = re.search(r"http://www.darklyrics.com/lyrics/*/(.*?).html", album)
         temp_album = match.group(1)
         current_album = temp_album.split("/")[1].lstrip().split(" ")[0]
-        print(f"Current album: {current_album}")
-
-        if os.path.exists(current_artist):
-            os.chdir(f"{working_directory}\\{current_artist}\\")
-            os.mkdir(current_album)
-            os.chdir(f"{working_directory}\\{current_artist}\\{current_album}\\")
-        else:
-            os.mkdir(current_artist)
-            os.chdir(f"{working_directory}\\{current_artist}\\")
-            os.mkdir(current_album)
-            os.chdir(f"{working_directory}\\{current_artist}\\{current_album}\\")
 
         r = requests.get(str(album) + """#1""", headers=headers)
 
+        # Getting lyrics from webpage
         soup = BeautifulSoup(r.text, "html.parser")
         albums = soup.findAll("div", {"class": "lyrics"})
         A = str(albums[0].get_text())
+
+        # Getting header from webpage (album name and tracklisting)
+        header_soup = BeautifulSoup(r.text, "html.parser")
+        header_names = header_soup.findAll("div", {"class": "albumlyrics"})
+        current_header = str(header_names[0].get_text())
+
+        # Parsing header for album NAME
+        # print(current_header)
+        formatted_album_match = re.search(r"\"(.*?)\"", current_header)
+
+        try:
+            formatted_album_name = formatted_album_match.group(1)
+        except:
+            pass
+
+        # Remove unwanted char from album name to avoid issues when creating folders
+        formatted_album_name = formatted_album_name.translate(remove_punctuation_map)
+        print(f"Current album: {formatted_album_name}")
+
+        # Parsing header for album YEAR
+        formatted_year_match = re.search(r"\((.*?)\)", current_header)
+
+        try:
+            formatted_year_name = formatted_year_match.group(1)
+
+        except:
+            pass
+
+        print(f"Current album year: {formatted_year_name}")
+
+        os.mkdir(str(formatted_year_name + "_" + formatted_album_name))
+        os.chdir(
+            f"{working_directory}\\{current_artist}\\{formatted_year_name}_{formatted_album_name}\\"
+        )
 
         # Temp output file for further parsing
         text_file = open(r"Output.txt", "w", encoding="utf-8")
         text_file.write(A)
         text_file.close()
 
-        ##Read temp output file line by line and parse by using regex on the Song title e.g 1,2,3.
+        # Read temp output file line by line and parse by using regex on the Song title e.g 1,2,3.
         readfile = open(r"Output.txt", "r", encoding="utf-8")
         lines = readfile.readlines()
         readfile.close()
@@ -163,5 +191,9 @@ for key, value in tqdm(single_link_dict.items()):
             else:
                 text_file.write(line)
 
+        # Remove temporary files
+        os.remove("temp.txt")
+        os.remove("output.txt")
 
-print("Processing complete")
+
+print("\n\nProcessing complete\n")
