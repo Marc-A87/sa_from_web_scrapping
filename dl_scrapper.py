@@ -27,7 +27,7 @@ os.mkdir("temp")
 
 
 # Creating band list
-bands_list = ["hammerfall"]
+bands_list = ["dragonforce"]
 
 # Capitalizing first letter of each word
 bands_list_cap = []
