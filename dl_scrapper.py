@@ -27,7 +27,7 @@ os.mkdir("temp")
 
 
 # Creating band list
-bands_list = ["dragonforce"]
+bands_list = ["amon amarth","black sabbath","dream theater","in flames","iron maiden","judas priest","metallica","motorhead","sabaton","sonata arctica"]
 
 # Capitalizing first letter of each word
 bands_list_cap = []
@@ -151,13 +151,16 @@ for key, value in tqdm(single_link_dict.items()):
 
         try:
             formatted_year_name = formatted_year_match.group(1)
-
         except:
             pass
 
         print(f"Current album year: {formatted_year_name}")
 
-        os.mkdir(str(formatted_year_name + "_" + formatted_album_name))
+        try:
+            os.mkdir(str(formatted_year_name + "_" + formatted_album_name))
+        except:
+            pass
+            
         os.chdir(
             f"{working_directory}\\{current_artist}\\{formatted_year_name}_{formatted_album_name}\\"
         )
@@ -192,8 +195,15 @@ for key, value in tqdm(single_link_dict.items()):
                 text_file.write(line)
 
         # Remove temporary files
-        os.remove("temp.txt")
-        os.remove("output.txt")
+        try:
+            os.remove("temp.txt")
+        except:
+            pass
+        
+        try:
+            os.remove("output.txt")
+        except:
+            pass
 
 
 print("\n\nProcessing complete\n")
