@@ -9,6 +9,7 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import statistics
 
 
+
 # Creating listing to all text files
 root_folder = os.getcwd()
 
@@ -27,6 +28,8 @@ print(f"{len(all_song_links)} text files identified will be analyzed.")
 
 print("\n\n")
 sid = SentimentIntensityAnalyzer()
+
+print(all_song_links[0])
 
 
 # Open each *.txt file

@@ -4,6 +4,7 @@ import shutil
 from bs4 import BeautifulSoup
 import requests
 from tqdm import tqdm
+#import preproc_and_sentiment_analyzer
 
 # Mimicking a browser request
 headers = {"User-Agent": "Mozilla/5.0"}
@@ -27,17 +28,17 @@ os.mkdir("temp")
 
 
 # Creating band list
-bands_list = ["amon amarth","black sabbath","dream theater","in flames","iron maiden","judas priest","metallica","motorhead","sabaton","sonata arctica"]
+bands_list = ["amon amarth"]
 
 # Capitalizing first letter of each word
 bands_list_cap = []
 
-for band in tqdm(bands_list):
+for band in bands_list:
     bands_list_cap.append(band.title())
 
 bands_root_url = []
 
-for band in tqdm(bands_list):
+for band in bands_list:
     # Keeping first letter for alphabetical categorization
     # Removing spaces in bands name
     bands_root_url.append(
@@ -52,6 +53,8 @@ bands_dict = dict(zip(bands_list_cap, bands_root_url))
 current_artist_albums_links = []
 final_artists_list = []
 full_tracklist_dict = {}
+
+print(f'\nGenerating links for the following artists: {bands_list}\n')
 
 for key, value in tqdm(bands_dict.items()):
 
@@ -69,6 +72,7 @@ for key, value in tqdm(bands_dict.items()):
     albums_div = current_soup.findAll("div", attrs={"class": "album"})
     # print(albums_div)
     # Appending all links found in identified divs
+
     for div in albums_div:
         # albums_links.append(div.findAll('a'))
         for link in div.find_all("a"):
@@ -79,7 +83,7 @@ for key, value in tqdm(bands_dict.items()):
             current_artist_albums_links.append(formatted_link)
 
     full_tracklist_dict[key] = current_artist_albums_links
-    print(f"{len(current_artist_albums_links)} songs found for artist {key}")
+    #print(f"{len(current_artist_albums_links)} songs found for artist {key}")
 
 
 # Keep one link per album (full_tracklist_dict kept for future reference)
@@ -87,7 +91,7 @@ for key, value in tqdm(bands_dict.items()):
 single_link_dict = {}
 first_links_for_album_in_artist = []
 
-for key in tqdm(full_tracklist_dict):
+for key in full_tracklist_dict:
     first_links_for_album_in_artist = []
     # print(key)
     full_tl = full_tracklist_dict.get(key)
@@ -101,6 +105,8 @@ for key in tqdm(full_tracklist_dict):
 # iterate of artists
 for key, value in tqdm(single_link_dict.items()):
 
+    print(f'\n\nQuerying lyrics for artist: {key}')
+
     os.chdir(working_directory)
 
     current_artist = key
@@ -108,7 +114,7 @@ for key, value in tqdm(single_link_dict.items()):
 
     os.mkdir(current_artist)
 
-    print(f"Current artist: {current_artist}")
+    #print(f"Current artist: {current_artist}")
 
     # Iterate of all albums
     # TODO: Fix issue with non-album songs (will make script crash)
@@ -144,7 +150,7 @@ for key, value in tqdm(single_link_dict.items()):
 
         # Remove unwanted char from album name to avoid issues when creating folders
         formatted_album_name = formatted_album_name.translate(remove_punctuation_map)
-        print(f"Current album: {formatted_album_name}")
+        #print(f"Current album: {formatted_album_name}")
 
         # Parsing header for album YEAR
         formatted_year_match = re.search(r"\((.*?)\)", current_header)
@@ -154,7 +160,7 @@ for key, value in tqdm(single_link_dict.items()):
         except:
             pass
 
-        print(f"Current album year: {formatted_year_name}")
+        #print(f"Current album year: {formatted_year_name}")
 
         try:
             os.mkdir(str(formatted_year_name + "_" + formatted_album_name))
@@ -207,3 +213,12 @@ for key, value in tqdm(single_link_dict.items()):
 
 
 print("\n\nProcessing complete\n")
+
+'''
+move_to_preproc = input('Move to preprocessing and batch sentiment analysis? (y/n)?')
+
+if move_to_preproc == 'y':
+    preproc_and_sentiment_analyzer.pre_proc_sa()
+else:
+    print('Exiting script')
+'''
