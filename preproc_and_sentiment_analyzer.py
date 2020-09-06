@@ -8,8 +8,6 @@ import glob
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import statistics
 
-
-
 # Creating listing to all text files
 root_folder = os.getcwd()
 
@@ -19,23 +17,37 @@ text_files = glob.glob(path + "/**/*.txt", recursive=True)
 
 all_song_links = []
 
+
 # Creating list containing all absolute paths
 for i in text_files:
     all_song_links.append(root_folder + i[1:])
 
-print(f"{len(all_song_links)} text files identified will be analyzed.")
+print(f"\n\n{len(all_song_links)} text files identified will be analyzed.\n")
 
-
-print("\n\n")
 sid = SentimentIntensityAnalyzer()
 
-print(all_song_links[0])
+# print(all_song_links[0])
+
+
+# Creating dictionnary holding all compound values of analyzed song, by artist
+values_by_artist = {}
 
 
 # Open each *.txt file
+for lyrics_file in tqdm(all_song_links):
 
-for lyrics_file in all_song_links[0:5]:
     song_lyrics = []
+
+    # identify artist
+
+    current_artist_match = re.search(r"\\temp\\(.*?)\\", lyrics_file)
+
+    try:
+        current_artist_name = current_artist_match.group(1)
+        # print(f'Current artist: {current_artist_name}')
+    except:
+        pass
+
     for line in open(lyrics_file, "r"):
         song_lyrics.append(line.strip())
 
@@ -65,10 +77,10 @@ for lyrics_file in all_song_links[0:5]:
 
     for line in lyrics_clean:
         if len(line) > 0 and line != "repeat chorus" and line != "chorus":
-            #print(evaluated_lines + 1)
-            #print(line)
+            # print(evaluated_lines + 1)
+            # print(line)
             line_results = sid.polarity_scores(line)
-            #print(line_results)
+            # print(line_results)
 
             # Increasing total of each value and append lists
             song_neg_value += line_results["neg"]
@@ -83,13 +95,11 @@ for lyrics_file in all_song_links[0:5]:
             song_compound_value += line_results["compound"]
             song_compound_value_list.append(float(line_results["compound"]))
 
-           
-
             evaluated_lines += 1
 
         else:
             pass
-
+    """
     print(f"VALUES FOR SONG: {lyrics_file}")
     print(f"Total negative value: {song_neg_value}")
     print(f"Total neutral value: {song_neutral_value}")
@@ -103,5 +113,34 @@ for lyrics_file in all_song_links[0:5]:
 
     else:
         print("Song trending towards NEGATIVITY\n\n")
+    """
 
-  
+    # Adding value to dictionnary
+
+    try:
+        values_by_artist.setdefault(current_artist_name, []).append(
+            statistics.mean(song_compound_value_list)
+        )
+    except:
+        pass
+
+
+# print(values_by_artist)
+
+
+# printing mean compound value by artist:
+for key, value in values_by_artist.items():
+
+    artist_trend = ""
+
+    if sum(value) / len(value) > 0:
+
+        artist_trend = "POSITIVITY"
+
+    else:
+
+        artist_trend = "NEGATIVITY"
+
+    print(
+        f"\n{key} mean compound value = {round(sum(value)/len(value),3)} -> trending towards {artist_trend} ({len(value)} songs analyzed)"
+    )

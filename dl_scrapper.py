@@ -4,7 +4,8 @@ import shutil
 from bs4 import BeautifulSoup
 import requests
 from tqdm import tqdm
-#import preproc_and_sentiment_analyzer
+
+# import preproc_and_sentiment_analyzer
 
 # Mimicking a browser request
 headers = {"User-Agent": "Mozilla/5.0"}
@@ -28,7 +29,15 @@ os.mkdir("temp")
 
 
 # Creating band list
-bands_list = ["amon amarth"]
+bands_list = [
+    "amon amarth",
+    "iron maiden",
+    "sabaton",
+    "my dying bride",
+    "nightwish",
+    "sonata arctica",
+    "anathema",
+]
 
 # Capitalizing first letter of each word
 bands_list_cap = []
@@ -54,7 +63,7 @@ current_artist_albums_links = []
 final_artists_list = []
 full_tracklist_dict = {}
 
-print(f'\nGenerating links for the following artists: {bands_list}\n')
+print(f"\nGenerating links for the following artists: {bands_list}\n")
 
 for key, value in tqdm(bands_dict.items()):
 
@@ -83,7 +92,7 @@ for key, value in tqdm(bands_dict.items()):
             current_artist_albums_links.append(formatted_link)
 
     full_tracklist_dict[key] = current_artist_albums_links
-    #print(f"{len(current_artist_albums_links)} songs found for artist {key}")
+    # print(f"{len(current_artist_albums_links)} songs found for artist {key}")
 
 
 # Keep one link per album (full_tracklist_dict kept for future reference)
@@ -103,9 +112,9 @@ for key in full_tracklist_dict:
     single_link_dict[key] = first_links_for_album_in_artist
 
 # iterate of artists
-for key, value in tqdm(single_link_dict.items()):
+for key, value in single_link_dict.items():
 
-    print(f'\n\nQuerying lyrics for artist: {key}')
+    print(f"\n\nQuerying lyrics for artist: {key}")
 
     os.chdir(working_directory)
 
@@ -114,7 +123,7 @@ for key, value in tqdm(single_link_dict.items()):
 
     os.mkdir(current_artist)
 
-    #print(f"Current artist: {current_artist}")
+    # print(f"Current artist: {current_artist}")
 
     # Iterate of all albums
     # TODO: Fix issue with non-album songs (will make script crash)
@@ -150,7 +159,7 @@ for key, value in tqdm(single_link_dict.items()):
 
         # Remove unwanted char from album name to avoid issues when creating folders
         formatted_album_name = formatted_album_name.translate(remove_punctuation_map)
-        #print(f"Current album: {formatted_album_name}")
+        # print(f"Current album: {formatted_album_name}")
 
         # Parsing header for album YEAR
         formatted_year_match = re.search(r"\((.*?)\)", current_header)
@@ -160,13 +169,13 @@ for key, value in tqdm(single_link_dict.items()):
         except:
             pass
 
-        #print(f"Current album year: {formatted_year_name}")
+        # print(f"Current album year: {formatted_year_name}")
 
         try:
             os.mkdir(str(formatted_year_name + "_" + formatted_album_name))
         except:
             pass
-            
+
         os.chdir(
             f"{working_directory}\\{current_artist}\\{formatted_year_name}_{formatted_album_name}\\"
         )
@@ -205,7 +214,7 @@ for key, value in tqdm(single_link_dict.items()):
             os.remove("temp.txt")
         except:
             pass
-        
+
         try:
             os.remove("output.txt")
         except:
@@ -214,11 +223,11 @@ for key, value in tqdm(single_link_dict.items()):
 
 print("\n\nProcessing complete\n")
 
-'''
+"""
 move_to_preproc = input('Move to preprocessing and batch sentiment analysis? (y/n)?')
 
 if move_to_preproc == 'y':
     preproc_and_sentiment_analyzer.pre_proc_sa()
 else:
     print('Exiting script')
-'''
+"""
