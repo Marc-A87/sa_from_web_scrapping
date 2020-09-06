@@ -3,6 +3,7 @@ import os
 import shutil
 from tqdm import tqdm
 import nltk
+
 # nltk.download('vader_lexicon')
 import glob
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
@@ -48,7 +49,7 @@ for lyrics_file in tqdm(all_song_links):
     except:
         pass
 
-    for line in open(lyrics_file, "r"):
+    for line in open(lyrics_file, "r", encoding="utf-8"):
         song_lyrics.append(line.strip())
 
     # Cleaning text, removing unwanted characters and formatting
@@ -133,14 +134,18 @@ for key, value in values_by_artist.items():
 
     artist_trend = ""
 
-    if sum(value) / len(value) > 0:
-
+    if sum(value) / len(value) > 0.01:
         artist_trend = "POSITIVITY"
-
     else:
-
         artist_trend = "NEGATIVITY"
 
     print(
-        f"\n{key} mean compound value = {round(sum(value)/len(value),3)} -> trending towards {artist_trend} ({len(value)} songs analyzed)"
+        f"\t {key} mean compound value = {round(sum(value)/len(value),3)} -> trending towards {artist_trend} ({len(value)} songs analyzed)"
     )
+
+"""
+#debug
+for key, value in values_by_artist.items():
+    print(key)
+    print(value[0:10])
+"""

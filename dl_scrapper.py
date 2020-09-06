@@ -37,6 +37,8 @@ bands_list = [
     "nightwish",
     "sonata arctica",
     "anathema",
+    "dimmu borgir",
+    "running wild",
 ]
 
 # Capitalizing first letter of each word
