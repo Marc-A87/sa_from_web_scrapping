@@ -4,8 +4,7 @@ import shutil
 from bs4 import BeautifulSoup
 import requests
 from tqdm import tqdm
-
-# import preproc_and_sentiment_analyzer
+import preproc_and_sentiment_analyzer
 
 # Mimicking a browser request
 headers = {"User-Agent": "Mozilla/5.0"}
@@ -30,15 +29,20 @@ os.mkdir("temp")
 
 # Creating band list
 bands_list = [
-    "amon amarth",
-    "iron maiden",
-    "sabaton",
-    "my dying bride",
-    "nightwish",
-    "sonata arctica",
-    "anathema",
-    "dimmu borgir",
-    "running wild",
+     "amon amarth"
+    ,"black sabbath"
+    ,"dream theater"
+    ,"in flames"
+    ,"hammerfall"
+    ,"iron maiden"
+    ,"judas priest"
+    ,"megadeth"
+    ,"metallica"
+    ,"motorhead"
+    ,"nightwish"
+    ,"running wild"
+    ,"sabaton"
+    ,"sonata arctica"
 ]
 
 # Capitalizing first letter of each word
@@ -225,11 +229,12 @@ for key, value in single_link_dict.items():
 
 print("\n\nProcessing complete\n")
 
-"""
+
 move_to_preproc = input('Move to preprocessing and batch sentiment analysis? (y/n)?')
 
 if move_to_preproc == 'y':
+    os.chdir(path)
     preproc_and_sentiment_analyzer.pre_proc_sa()
 else:
     print('Exiting script')
-"""
+
